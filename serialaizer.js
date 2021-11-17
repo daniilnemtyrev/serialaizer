@@ -1,4 +1,4 @@
-import * as xml2json  from './node_modules/xml-js/lib/xml2json.js';
+// import xml2json  from './node_modules/xml-js/lib/xml2json.js';
 
 var xml =
 '<?xml version="1.0" encoding="utf-8"?>' +
