@@ -1,31 +1,38 @@
-// import xml2json  from './node_modules/xml-js/lib/xml2json.js';
-
-var xml =
-'<?xml version="1.0" encoding="utf-8"?>' +
-'<note importance="high" logged="true">' +
-'    <title>Happy</title>' +
-'    <todo>Work</todo>' +
-'    <todo>Play</todo>' +
-'</note>';
-var result1 = xml2json(xml, {compact: true, spaces: 4});
-console.log(result1);
 
 function Input() {
     this.k = 0,
     this.sum = [],
     this.mult = [],
+    this.type = "",
     this.serializer = function(type, obj) {
+        this.type = type
         if(type === 'json'){
-            const objJson = JSON.parse(obj)
-            this.k = objJson.K
-            this.sum = objJson.Sums
-            this.mult = objJson.Muls
+            const objFromJson = JSON.parse(obj)
+            this.k = objFromJson.K
+            this.sum = objFromJson.Sums
+            this.mult = objFromJson.Muls
+        }
+        if(type === 'xml') {
+            const objFromXml = xml2js(obj)
+            this.k = objFromXml.elements[0].elements[0].elements[0].text
+            this.sum = objFromXml.elements[0].elements[1].elements.map(item => +item.elements[0].text)
+            this.mult = objFromXml.elements[0].elements[2].elements.map(item => +item.elements[0].text)
         }
     }
 }
 
 const a = new Input()
-a.serializer('json', '{"K":10,"Sums":[1.01,2.02],"Muls":[1,4]}')
+a.serializer('xml', `<Input>
+ <K>10</K>
+ <Sums>
+ <decimal>1.01</decimal>
+ <decimal>2.02</decimal>
+ </Sums>
+ <Muls>
+ <int>1</int>
+ <int>4</int>
+ </Muls>
+</Input>`)
 
 function Output() {
     this.sumResult = 0,
@@ -35,12 +42,27 @@ function Output() {
         this.sumResult = +(a.sum.reduce((prevValue, curValue) => prevValue + curValue) * a.k).toFixed(2)
         this.mulResult = +(a.mult.reduce((prevValue, curValue) => prevValue * curValue)).toFixed(2)
         this.sorted = a.sum.concat(a.mult).sort((a, b) => a - b)
-        return JSON.stringify(
-        {
-            SumResult: this.sumResult,
-            MulResult: this.mulResult,
-            SortedInputs: this.sorted
-        }) 
+        if(a.type === 'json'){
+            return JSON.stringify(
+                {
+                    SumResult: this.sumResult,
+                    MulResult: this.mulResult,
+                    SortedInputs: this.sorted
+                }) 
+        }
+        if(a.type === 'xml') {
+            console.log(1);
+            console.log(js2xml({
+                name: 'John',
+                surname: 'LOLO'
+            },{}));
+            return js2xml({
+                    SumResult: this.sumResult,
+                    MulResult: this.mulResult,
+                    SortedInputs: this.sorted
+                })
+        }
+    
     }
 }
 
