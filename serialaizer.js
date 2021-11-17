@@ -21,6 +21,8 @@ function Input() {
     }
 }
 
+var toXML = window.jstoxml.toXML;
+
 const a = new Input()
 a.serializer('xml', `<Input>
  <K>10</K>
@@ -51,15 +53,12 @@ function Output() {
                 }) 
         }
         if(a.type === 'xml') {
-            console.log(1);
-            console.log(js2xml({
-                name: 'John',
-                surname: 'LOLO'
-            },{}));
-            return js2xml({
+            return toXML({
                     SumResult: this.sumResult,
                     MulResult: this.mulResult,
-                    SortedInputs: this.sorted
+                    SortedInputs: {
+                        decimal: this.sorted
+                    }
                 })
         }
     
